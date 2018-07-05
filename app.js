@@ -26,53 +26,25 @@ request.get(bookUrl).charset('gbk').then(async res => {
     const item = $(el)
     // 每一章的链接
     const href = baseUrl + item.find('a').attr('href')
-    hrefs.push(href)
-    // request.get(href).charset('gbk').then(res => {
-    //   const itemData = res.text
-    //   const item$ = cheerio.load(itemData)
-    //   const itemTitle = item$('.box_con .bookname h1').text()
-    //   console.log(`开始爬取-${itemTitle}`)
-    //   const itemContent = item$('.box_con #content').text()
-    //   const item = itemTitle + itemContent
-    //   bookContent.push(item)
-    //   console.log(`已完成爬取${itemTitle}章的内容`)
-    // })
+    // hrefs.push(href)
+    request.get(href).charset('gbk').then(res => {
+      const itemData = res.text
+      const item$ = cheerio.load(itemData)
+      const itemTitle = item$('.box_con .bookname h1').text()
+      console.log(`开始爬取-${itemTitle}`)
+      const itemContent = item$('.box_con #content').text()
+      const item = itemTitle + itemContent
+      console.log(`已完成爬取${itemTitle}章的内容`)
+      if (!fs.existsSync(path.join(__dirname, `./novle/${bookName}`))) {
+        fs.mkdirSync(path.join(__dirname, `./novle/${bookName}`))
+      }
+      fs.writeFile(path.join(__dirname, `./novle/${bookName}/${itemTitle}.txt`), itemContent, 'utf8', err => {
+        if (err) {
+          console.error(err)
+        }
+        console.log('写入成功！')
+      })
+    })
   })
-  console.log(hrefs)
-  // 2.遍历章节内容
-  // await getlists(hrefs)
-  // const getlists = async lists => {
-  //   for (let i = 0; i < lists.length; i++) {
-  //     request.get(lists[i]).charset('gbk').then(async res => {
-  //       const itemData = res.text
-  //       const item$ = cheerio.load(itemData)
-  //       const itemTitle = item$('.box_con .bookname h1').text()
-  //       console.log(`开始爬取第${i}章-${itemTitle}`)
-  //       const itemContent = item$('.box_con #content').text()
-  //       const item = itemTitle + itemContent
-  //       await bookContent.push(item)
-  //       console.log(`已完成爬去第${i}章的内容`)
-  //     })
-  //   }
-  // }
-  // for (let i = 0; i < hrefs.length; i++) {
-  //   request.get(hrefs[i]).charset('gbk').then(async res => {
-  //     const itemData = res.text
-  //     const item$ = cheerio.load(itemData)
-  //     const itemTitle = item$('.box_con .bookname h1').text()
-  //     console.log(`开始爬取第${i}章-${itemTitle}`)
-  //     const itemContent = item$('.box_con #content').text()
-  //     const item = itemTitle + itemContent
-  //     await bookContent.push(item)
-  //     console.log(`已完成爬去第${i}章的内容`)
-  //   })
-  // }
-  // book = await intro + bookContent.join('')
-  console.log(bookContent)
-  // fs.writeFile(path.join(__dirname, `./novle/${bookName}.txt`), book, 'utf8', err => {
-  //   if (err) {
-  //     console.error(err)
-  //   }
-  // })
 })
 
